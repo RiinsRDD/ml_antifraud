@@ -30,7 +30,7 @@ The content is organized as follows:
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
 - Only files matching these patterns are included: **/*
-- Files matching these patterns are excluded: **/venv/**, **/.venv/**, **/__pycache__/**, **/.pytest_cache/**, **/.mypy_cache/**, **/.git/**, **/migrations/**, *.log, *.pyc, *.md, *repomix.config.json, .gitignore
+- Files matching these patterns are excluded: **/venv/**, **/.venv/**, **/__pycache__/**, **/.pytest_cache/**, **/.mypy_cache/**, **/.git/**, **/migrations/**, *.log, *.pyc, README.md, *repomix.config.json, .gitignore
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Line numbers have been added to the beginning of each line
@@ -64,6 +64,8 @@ tests/
   test_services.py
 utils/
   logger.py
+ai.md
+ARCHITECTURE.md
 docker-compose.traffic.yaml
 docker-compose.yaml
 Dockerfile
@@ -75,7 +77,7 @@ pyproject.toml
 # Files
 
 ## File: api/middleware/logging.py
-```python
+````python
  1: """
  2: Middleware для логирования запросов
  3: """
@@ -107,10 +109,10 @@ pyproject.toml
 29:             process_time = (time.time() - start_time) * 1000
 30:             logger.error(f"Ошибка обработки запроса: {request.method} {request.url} - {process_time:.2f}ms - {str(e)}")
 31:             raise
-```
+````
 
 ## File: api/routes/transaction.py
-```python
+````python
  1: """
  2: API маршруты для работы с транзакциями
  3: """
@@ -154,10 +156,10 @@ pyproject.toml
 41:     except Exception as e:
 42:         logger.error(f"Ошибка обработки транзакции {transaction.transaction_id}: {str(e)}")
 43:         raise HTTPException(status_code=500, detail=f"Ошибка обработки транзакции: {str(e)}")
-```
+````
 
 ## File: config/settings.py
-```python
+````python
  1: """
  2: Конфигурация приложения
  3: """
@@ -192,10 +194,10 @@ pyproject.toml
 32: 
 33: # Создание экземпляра конфигурации
 34: settings = Settings()
-```
+````
 
 ## File: exceptions/__init__.py
-```python
+````python
  1: """
  2: Пользовательские исключения
  3: """
@@ -215,10 +217,10 @@ pyproject.toml
 17: class CacheError(AntifraudException):
 18:     """Ошибка кэширования"""
 19:     pass
-```
+````
 
 ## File: load_generator/traffic_generator.py
-```python
+````python
   1: """
   2: Генератор трафика для микросервиса антифрод оценки транзакций
   3: Использует asyncio для асинхронной генерации нагрузки
@@ -405,10 +407,10 @@ pyproject.toml
 184: 
 185: if __name__ == "__main__":
 186:     asyncio.run(main())
-```
+````
 
 ## File: models/scoring.py
-```python
+````python
  1: """
  2: Модели результатов оценки
  3: """
@@ -463,10 +465,10 @@ pyproject.toml
 52:                 "processed_at": "2023-01-01T10:00:00Z"
 53:             }
 54:         }
-```
+````
 
 ## File: models/transaction.py
-```python
+````python
  1: """
  2: Модели транзакций
  3: """
@@ -535,10 +537,10 @@ pyproject.toml
 66:                 "customer_risk_score": 0.3,
 67:             }
 68:         }
-```
+````
 
 ## File: monitoring/metrics.py
-```python
+````python
  1: """
  2: Модуль для настройки метрик мониторинга
  3: """
@@ -592,10 +594,10 @@ pyproject.toml
 51:         'request_latency': REQUEST_LATENCY,
 52:         'active_requests': ACTIVE_REQUESTS
 53:     }
-```
+````
 
 ## File: repositories/transaction_repository.py
-```python
+````python
  1: """
  2: Репозиторий для работы с транзакциями в Redis
  3: """
@@ -690,10 +692,10 @@ pyproject.toml
 92:             NotImplementedError: Если метод не реализован
 93:         """
 94:         ...
-```
+````
 
 ## File: services/scoring_service.py
-```python
+````python
  1: """
  2: Сервис оценки транзакций с использованием ML модели
  3: """
@@ -752,10 +754,10 @@ pyproject.toml
 56:             NotImplementedError: Если метод не реализован
 57:         """
 58:         ...
-```
+````
 
 ## File: services/transaction_service.py
-```python
+````python
  1: """
  2: Сервис обработки транзакций
  3: """
@@ -831,10 +833,10 @@ pyproject.toml
 73:             NotImplementedError: Если метод не реализован
 74:         """
 75:         ...
-```
+````
 
 ## File: tests/test_models.py
-```python
+````python
  1: """
  2: Тесты для моделей данных
  3: """
@@ -916,10 +918,10 @@ pyproject.toml
 79:     assert scoring_result.scoring == 0.25
 80:     assert scoring_result.is_fraud is False
 81:     assert scoring_result.processing_time_ms == 85
-```
+````
 
 ## File: tests/test_services.py
-```python
+````python
   1: """
   2: Тесты для сервисов
   3: """
@@ -1026,10 +1028,10 @@ pyproject.toml
 104:     assert result.customer_id == "customer_123"
 105:     assert result.transaction_id == "txn_456"
 106:     assert result.scoring == 0.5
-```
+````
 
 ## File: utils/logger.py
-```python
+````python
  1: """
  2: Настройка логгирования
  3: """
@@ -1068,10 +1070,412 @@ pyproject.toml
 36:     # )
 37: 
 38:     return logger
-```
+````
+
+## File: ai.md
+````markdown
+  1: # Микросервис оценки финансовых транзакций
+  2: 
+  3: ## Стек
+  4: - Python 3.12+
+  5: - FastAPI
+  6: - Pydantic
+  7: - Redis (кэш)
+  8: - UoW (Unit of Work)
+  9: - Repository Pattern
+ 10: - Dependency Injection
+ 11: - Loguru (/logging)
+ 12: - Async/await
+ 13: - Docker
+ 14: - Prometheus
+ 15: - Locust (для генерации трафика)
+ 16: 
+ 17: ## Архитектурный стиль
+ 18: - Service Layer Architecture
+ 19: - Dependency Injection (на уровне FastAPI)
+ 20: - Repository Pattern для работы с Redis
+ 21: - Clean Architecture с четким разделением ответственности
+ 22: - Микросервисная архитектура
+ 23: 
+ 24: ## Module Map
+ 25: - `main.py` - точка входа FastAPI приложения
+ 26: - `models/transaction.py` - Pydantic модели для транзакций
+ 27: - `models/scoring.py` - модели для результатов оценки
+ 28: - `services/transaction_service.py` - бизнес-логика обработки транзакций
+ 29: - `services/scoring_service.py` - сервис для работы с ML моделью
+ 30: - `repositories/transaction_repository.py` - репозиторий для работы с Redis
+ 31: - `utils/logger.py` - конфигурация логгирования
+ 32: - `config/settings.py` - настройки приложения
+ 33: - `api/routes/transaction.py` - REST API маршруты
+ 34: - `api/middleware/logging.py` - middleware для логирования
+ 35: - `exceptions/` - пользовательские исключения
+ 36: - `load_generator/traffic_generator.py` - генератор трафика
+ 37: - `monitoring/metrics.py` - модуль настройки метрик мониторинга
+ 38: - `tests/` - тесты проекта
+ 39: - `Dockerfile` - конфигурация Docker образа
+ 40: - `docker-compose.yaml` - docker-compose для основного сервиса
+ 41: - `docker-compose.traffic.yaml` - docker-compose для генератора трафика
+ 42: - `prometheus.yml` - конфигурация Prometheus
+ 43: 
+ 44: ## Public Interfaces
+ 45: 
+ 46: ### Models
+ 47: ```python
+ 48: # models/transaction.py
+ 49: from pydantic import BaseModel
+ 50: from typing import Optional
+ 51: 
+ 52: class Transaction(BaseModel):
+ 53:     customer_id: str
+ 54:     transaction_id: str
+ 55:     amount: float
+ 56:     type: int
+ 57:     currency: str
+ 58:     timestamp: str
+ 59:     merchant_id: str
+ 60:     card_bin: str
+ 61:     ip_address: str
+ 62:     device_id: str
+ 63:     location: str
+ 64:     channel: str
+ 65:     is_fraud: Optional[bool] = None
+ 66:     # ... остальные поля
+ 67: 
+ 68: # models/scoring.py
+ 69: from pydantic import BaseModel
+ 70: from typing import Optional
+ 71: 
+ 72: class ScoringResult(BaseModel):
+ 73:     transaction_id: str
+ 74:     scoring: float
+ 75:     is_fraud: Optional[bool] = None
+ 76:     # ... остальные поля
+ 77: ```
+ 78: 
+ 79: ### Repositories
+ 80: ```python
+ 81: # repositories/transaction_repository.py
+ 82: from abc import ABC, abstractmethod
+ 83: from typing import List
+ 84: from models.transaction import Transaction
+ 85: 
+ 86: class TransactionRepository(ABC):
+ 87:     @abstractmethod
+ 88:     async def add_transaction(self, transaction: Transaction) -> None:
+ 89:         ...
+ 90: 
+ 91:     @abstractmethod
+ 92:     async def get_transactions_by_customer(self, customer_id: str) -> List[Transaction]:
+ 93:         ...
+ 94: 
+ 95:     @abstractmethod
+ 96:     async def get_statistics_by_customer(self, customer_id: str) -> dict:
+ 97:         ...
+ 98: 
+ 99:     @abstractmethod
+100:     async def update_statistics(self, customer_id: str, stats: dict) -> None:
+101:         ...
+102: 
+103:     @abstractmethod
+104:     async def get_cached_transaction(self, customer_id: str) -> Transaction:
+105:         ...
+106: 
+107:     @abstractmethod
+108:     async def delete_expired_transactions(self) -> None:
+109:         ...
+110: ```
+111: 
+112: ### Services
+113: ```python
+114: # services/transaction_service.py
+115: from models.transaction import Transaction
+116: from models.scoring import ScoringResult
+117: from repositories.transaction_repository import TransactionRepository
+118: 
+119: class TransactionService:
+120:     async def process_transaction(self, transaction: Transaction) -> ScoringResult:
+121:         ...
+122: 
+123: # services/scoring_service.py
+124: from models.transaction import Transaction
+125: from models.scoring import ScoringResult
+126: 
+127: class ScoringService:
+128:     async def score_transaction(self, transaction: Transaction) -> ScoringResult:
+129:         ...
+130: ```
+131: 
+132: ### API Routes
+133: ```python
+134: # api/routes/transaction.py
+135: from fastapi import APIRouter
+136: from models.transaction import Transaction
+137: from models.scoring import ScoringResult
+138: 
+139: router = APIRouter()
+140: 
+141: @router.post("/transactions", response_model=ScoringResult)
+142: async def process_transaction(transaction: Transaction):
+143:     ...
+144: ```
+145: 
+146: ## Пример pyproject.toml
+147: ```toml
+148: [build-system]
+149: requires = ["setuptools", "wheel"]
+150: 
+151: [project]
+152: name = "antifraud-scoring-service"
+153: version = "0.1.0"
+154: description = "Microservice for financial transaction scoring"
+155: authors = [{name = "Senior Python Architect"}]
+156: license = "MIT"
+157: readme = "README.md"
+158: 
+159: [project.dependencies]
+160: fastapi = "^0.115.0"
+161: pydantic = "^2.8.0"
+162: redis = "^5.0.1"
+163: loguru = "^0.7.2"
+164: uvicorn = "^0.30.0"
+165: asyncio = "^3.4.3"
+166: typing-extensions = "^4.12.0"
+167: prometheus-client = "^0.20.1"
+168: prometheus-fastapi-instrumentator = "^7.0.0"
+169: 
+170: [project.optional-dependencies]
+171: dev = [
+172:     "pytest = ^8.3.0",
+173:     "pytest-asyncio = ^0.23.0",
+174:     "black = ^24.4.0",
+175:     "flake8 = ^7.0.0",
+176:     "locust = ^2.29.0",
+177: ]
+178: 
+179: [project.scripts]
+180: run-server = "main:main"
+181: 
+182: [tool.setuptools.packages.find]
+183: where = ["."]
+184: include = ["antifraud*"]
+185: ```
+````
+
+## File: ARCHITECTURE.md
+````markdown
+  1: # Архитектура микросервиса оценки финансовых транзакций
+  2: 
+  3: ## Общая архитектура
+  4: 
+  5: Система построена по следующим принципам:
+  6: 
+  7: 1. **Service Layer Architecture** - Четкое разделение бизнес-логики
+  8: 2. **Repository Pattern** - Абстракция работы с данными (в данном случае Redis)
+  9: 3. **Dependency Injection** - Внедрение зависимостей через FastAPI
+ 10: 4. **Clean Architecture** - Четкое разделение слоев: API, Service, Repository, Models
+ 11: 5. **Микросервисная архитектура** - Система спроектирована как отдельный микросервис
+ 12: 
+ 13: ## Структура слоев
+ 14: 
+ 15: ### 1. API Layer (Представление)
+ 16: - **Файлы**: `api/routes/transaction.py`
+ 17: - **Ответственность**: Обработка HTTP запросов, маршрутизация, валидация входных данных
+ 18: - **Входные данные**: JSON с данными транзакции
+ 19: - **Выходные данные**: JSON с результатом оценки
+ 20: 
+ 21: ### 2. Service Layer (Бизнес логика)
+ 22: - **Файлы**: `services/transaction_service.py`, `services/scoring_service.py`
+ 23: - **Ответственность**:
+ 24:   - Обработка логики транзакции
+ 25:   - Вызов ML модели для оценки
+ 26:   - Расчет статистики по клиенту
+ 27:   - Обработка ошибок и таймаутов
+ 28: - **Связи**: Зависит от Repository для работы с данными
+ 29: 
+ 30: ### 3. Repository Layer (Доступ к данным)
+ 31: - **Файлы**: `repositories/transaction_repository.py`
+ 32: - **Ответственность**:
+ 33:   - Интерфейс для работы с Redis кэшем
+ 34:   - Добавление/извлечение транзакций
+ 35:   - Расчет статистики
+ 36: - **Реализация**: Конкретная реализация будет в `repositories/redis_transaction_repository.py`
+ 37: 
+ 38: ### 4. Model Layer (Модели данных)
+ 39: - **Файлы**: `models/transaction.py`, `models/scoring.py`
+ 40: - **Ответственность**:
+ 41:   - Определение структуры данных
+ 42:   - Валидация входных и выходных данных
+ 43:   - JSON схемы для API
+ 44: 
+ 45: ### 5. Utilities/Support Layer
+ 46: - **Файлы**: `utils/logger.py`, `api/middleware/logging.py`
+ 47: - **Ответственность**:
+ 48:   - Логгирование запросов
+ 49:   - Middleware для обработки запросов
+ 50: 
+ 51: ### 6. Monitoring Layer (Мониторинг)
+ 52: - **Файлы**: `monitoring/metrics.py`
+ 53: - **Ответственность**:
+ 54:   - Настройка метрик Prometheus
+ 55:   - Экспорт метрик для системы мониторинга
+ 56: 
+ 57: ### 7. Load Generation Layer (Генератор трафика)
+ 58: - **Файлы**: `load_generator/traffic_generator.py`
+ 59: - **Ответственность**:
+ 60:   - Генерация нагрузки для тестирования
+ 61:   - Симуляция транзакций с различными параметрами
+ 62:   - Отслеживание статистики обработки
+ 63: 
+ 64: ## Путь запроса (Request Flow)
+ 65: 
+ 66: ### 1. Входящий запрос
+ 67: Клиент отправляет POST запрос на `/api/v1/transactions` с JSON телом:
+ 68: 
+ 69: ```json
+ 70: {
+ 71:   "customer_id": "customer_123",
+ 72:   "transaction_id": "txn_456",
+ 73:   "amount": 100.50,
+ 74:   "currency": "USD",
+ 75:   "type": 78,
+ 76:   "merchant_id": "merchant_789",
+ 77:   "card_bin": "411111",
+ 78:   "ip_address": "192.168.1.1",
+ 79:   "device_id": "device_001",
+ 80:   "location": "US-NY",
+ 81:   "channel": "online",
+ 82:   "timestamp": "2023-01-01T10:00:00Z"
+ 83: }
+ 84: ```
+ 85: 
+ 86: ### 2. API обработчик
+ 87: - **Файл**: `api/routes/transaction.py`
+ 88: - **Действие**: Принимает запрос, валидирует данные с помощью Pydantic модели `Transaction`
+ 89: - **Логирование**: Записывает информацию о входящем запросе в логи
+ 90: - **Передача**: Передает данные в `TransactionService`
+ 91: 
+ 92: ### 3. Service Layer (Обработка транзакции)
+ 93: - **Файл**: `services/transaction_service.py`
+ 94: - **Действие**:
+ 95:   - Валидация транзакции
+ 96:   - Замер времени начала обработки
+ 97:   - Добавление транзакции в кэш (Redis)
+ 98:   - Получение истории транзакций по клиенту
+ 99:   - Расчет статистики для клиента
+100:   - Вызов Scoring Service
+101: 
+102: ### 4. Repository Layer (Работа с кэшем)
+103: - **Файл**: `repositories/transaction_repository.py`
+104: - **Действие**:
+105:   - Добавление транзакции в Redis с TTL 24 часа
+106:   - Получение всех транзакций по customer_id
+107:   - Изменение счетчиков и статистики
+108:   - Обновление вспомогательных данных для расчета средних значений
+109: 
+110: ### 5. Scoring Service (Оценка с ML)
+111: - **Файл**: `services/scoring_service.py`
+112: - **Действие**:
+113:   - Вызов ML модели для оценки транзакции
+114:   - Если модель не отвечает вовремя - возвращается значение по умолчанию
+115:   - Возврат результата оценки
+116: 
+117: ### 6. Формирование ответа
+118: - **Файл**: `services/transaction_service.py`
+119: - **Действие**:
+120:   - Формирование полного ответа с результатом оценки
+121:   - Расчет времени обработки (должно быть <= 100-200ms)
+122:   - Добавление всех необходимых статистических данных
+123:   - Запись в логи о завершении обработки
+124: 
+125: ### 7. Возвращение ответа
+126: - **Файл**: `api/routes/transaction.py`
+127: - **Действие**:
+128:   - Формирование JSON ответа по модели `ScoringResult`
+129:   - Отправка HTTP ответа клиенту с кодом 200
+130:   - Запись в логи о завершении запроса и времени обработки
+131: 
+132: ## Схема взаимодействия
+133: 
+134: ```
+135: [Клиент]
+136:     ↓
+137: [API Layer] → [Service Layer] → [Repository Layer] → [Redis]
+138:     ↑                              ↓
+139:     |                      [Scoring Service]
+140:     |                              ↓
+141:     |                      [ML Model (заглушка)]
+142:     |                              ↓
+143:     ↓                        [Возврат результата]
+144: [Ответ JSON]
+145: ```
+146: 
+147: ## Требования к производительности
+148: 
+149: 1. **Время обработки**: Не более 200мс
+150: 2. **Максимальное время оценки**: 100мс для ML модели
+151: 3. **Таймаут по умолчанию**: Если ML модель не отвечает, возвращать значение по умолчанию (0.5)
+152: 4. **Кэш**: 24 часа жизни записей, автоматическое удаление истекших
+153: 
+154: ## Логгирование
+155: 
+156: Все действия логгируются с использованием Loguru:
+157: - Входящие запросы с ID транзакции
+158: - Завершение обработки запроса с временем выполнения
+159: - Ошибки обработки
+160: - Системные события (запуск/остановка сервиса)
+161: 
+162: ## Ошибки и обработка
+163: 
+164: 1. **Валидация данных**: Происходит на уровне Pydantic
+165: 2. **Ошибки сервиса**: Возвращаются как HTTP 500
+166: 3. **Таймауты**: Специальная обработка через `ModelTimeoutError`
+167: 4. **Кэш ошибки**: Обработка ошибок Redis через `CacheError`
+168: 
+169: ## Мониторинг и метрики
+170: 
+171: Система поддерживает комплексную систему мониторинга:
+172: 
+173: 1. **Prometheus Metrics**:
+174:    - Счетчики запросов по методам и эндпоинтам
+175:    - Гистограммы времени обработки запросов
+176:    - Gauge для отслеживания активных запросов
+177: 
+178: 2. **Мониторинг Redis**:
+179:    - Использование Redis Exporter для экспорта метрик Redis в Prometheus
+180:    - Отслеживание состояния кэша и производительности
+181: 
+182: 3. **Визуализация**:
+183:    - Grafana для визуализации метрик
+184:    - Конфигурация для настройки dashboards
+185: 
+186: 4. **Логирование**:
+187:    - Использование Loguru для детального логирования
+188:    - Логи доступны для анализа в системы типа OpenSearch
+189: 
+190: ## Генератор трафика
+191: 
+192: Для тестирования производительности и функциональности системы используется генератор трафика:
+193: 
+194: 1. **Features**:
+195:    - Асинхронная генерация транзакций с использованием aiohttp
+196:    - Генерация случайных данных для транзакций
+197:    - Настройка количества транзакций в секунду
+198:    - Отслеживание статистики (успешные/ошибочные запросы)
+199:    - Интеграция с мониторингом
+200: 
+201: 2. **Конфигурация**:
+202:    - Максимальное количество транзакций в секунду (по умолчанию 1000)
+203:    - Возможность настройки URL сервиса
+204:    - Поддержка различий в типах транзакций, валютах, каналах и т.д.
+205: 
+206: 3. **Тестирование**:
+207:    - Позволяет проверить производительность сервиса под нагрузкой
+208:    - Отслеживает задержки и отказы
+209:    - Используется для нагрузочного тестирования
+````
 
 ## File: docker-compose.traffic.yaml
-```yaml
+````yaml
  1: version: '3.8'
  2: 
  3: services:
@@ -1117,10 +1521,10 @@ pyproject.toml
 43: networks:
 44:   antifraud-network:
 45:     driver: bridge
-```
+````
 
 ## File: docker-compose.yaml
-```yaml
+````yaml
  1: version: '3.8'
  2: 
  3: services:
@@ -1189,10 +1593,10 @@ pyproject.toml
 66: networks:
 67:   antifraud-network:
 68:     driver: bridge
-```
+````
 
 ## File: Dockerfile
-```dockerfile
+````dockerfile
  1: FROM python:3.12-slim
  2: 
  3: # Установка зависимостей
@@ -1217,10 +1621,10 @@ pyproject.toml
 22: 
 23: # Команда запуска
 24: CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
+````
 
 ## File: main.py
-```python
+````python
  1: """
  2: Микросервис оценки финансовых транзакций
  3: """
@@ -1286,10 +1690,10 @@ pyproject.toml
 63: if __name__ == "__main__":
 64:     import uvicorn
 65:     uvicorn.run(app, host="0.0.0.0", port=8000)
-```
+````
 
 ## File: prometheus.yml
-```yaml
+````yaml
  1: global:
  2:   scrape_interval: 15s
  3: 
@@ -1301,10 +1705,10 @@ pyproject.toml
  9:   - job_name: 'redis-exporter'
 10:     static_configs:
 11:       - targets: ['redis-exporter:9121']
-```
+````
 
 ## File: pyproject.toml
-```toml
+````toml
  1: [build-system]
  2: requires = ["setuptools", "wheel"]
  3: 
@@ -1342,4 +1746,4 @@ pyproject.toml
 35: [tool.setuptools.packages.find]
 36: where = ["."]
 37: include = ["antifraud*"]
-```
+````

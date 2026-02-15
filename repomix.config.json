@@ -19,7 +19,7 @@
       "**/migrations/**",
       "*.log",
       "*.pyc",
-      "*.md",
+      "README.md",
       "*repomix.config.json",
       ".gitignore"
     ]
