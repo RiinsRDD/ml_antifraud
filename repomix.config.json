@@ -1,0 +1,30 @@
+{
+  "output": {
+    "filePath": "repomix-output.md",
+    "style": "markdown",
+    "removeComments": false,
+    "showLineNumbers": true
+  },
+  "include": [
+    "**/*"
+  ],
+  "ignore": {
+    "customPatterns": [
+      "**/venv/**",
+      "**/.venv/**",
+      "**/__pycache__/**",
+      "**/.pytest_cache/**",
+      "**/.mypy_cache/**",
+      "**/.git/**",
+      "**/migrations/**",
+      "*.log",
+      "*.pyc",
+      "*.md",
+      "*repomix.config.json",
+      ".gitignore"
+    ]
+  },
+  "security": {
+    "enableCheck": true
+  }
+}

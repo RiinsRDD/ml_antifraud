@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  traffic-generator:
+    build: .
+    container_name: antifraud-traffic-generator
+    command: python -m load_generator.traffic_generator
+    environment:
+      - BASE_URL=http://antifraud-service:8000
+      - MAX_TRANSACTIONS=1000
+    depends_on:
+      - antifraud-service
+    networks:
+      - antifraud-network
+
+  antifraud-service:
+    image: antifraud-service
+    container_name: antifraud-service
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+    networks:
+      - antifraud-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: antifraud-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - antifraud-network
+
+volumes:
+  redis_data:
+
+networks:
+  antifraud-network:
+    driver: bridge
