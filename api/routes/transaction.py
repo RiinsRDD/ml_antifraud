@@ -2,28 +2,24 @@
 API маршруты для работы с транзакциями
 """
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Optional
 from models.transaction import Transaction
 from models.scoring import ScoringResult
-from services.transaction_service import TransactionService
-from config.settings import settings
 from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
+
 @router.post("/", response_model=ScoringResult, status_code=200)
 async def process_transaction(
-    transaction: Transaction,
-    transaction_service: TransactionService = Depends()
+    transaction: Transaction
 ):
     """
     Обработать транзакцию и вернуть оценку риска
 
     Args:
         transaction: Входящая транзакция
-        transaction_service: Сервис обработки транзакций
 
     Returns:
         Результат оценки транзакции
@@ -31,6 +27,10 @@ async def process_transaction(
     Raises:
         HTTPException: Если произошла ошибка обработки
     """
+    # Получаем сервис из app state
+    from main import get_transaction_service
+    transaction_service = get_transaction_service()
+    
     logger.info(f"Получена транзакция: {transaction.transaction_id} от клиента: {transaction.customer_id}")
 
     try:

@@ -31,11 +31,10 @@ def setup_metrics(app: FastAPI):
         app: Экземпляр FastAPI приложения
     """
     # Установка инструмента инструментирования
-    Instrumentator(
-        should_group_paths=True,
-        should_add_histogram=True,
+    instrumentator = Instrumentator(
         excluded_handlers=["/metrics"]
-    ).instrument(app)
+    )
+    instrumentator.instrument(app)
 
     # Добавление пользовательских метрик
     # (в реальном приложении могли бы быть дополнительные метрики в зависимости от бизнес-логики)

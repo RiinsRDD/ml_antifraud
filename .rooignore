@@ -1,0 +1,16 @@
+# Игнорируем тяжелые отчеты
+repomix-output.md
+repomix.config.json
+
+# Игнорируем временные или сгенерированные файлы
+architecture.html
+ml_antifraud_architecture.html
+
+# Игнорируем виртуальное окружение и кэш
+.venv/
+__pycache__/
+*.pyc
+README.md
+*.egg-info/
+.gitignore
+uv.lock

@@ -1,32 +1,33 @@
 [build-system]
 requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "antifraud-scoring-service"
 version = "0.1.0"
 description = "Microservice for financial transaction scoring"
 authors = [{name = "Senior Python Architect"}]
-license = "MIT"
+license = {text = "MIT"}
 readme = "README.md"
-
-[project.dependencies]
-fastapi = "^0.115.0"
-pydantic = "^2.8.0"
-redis = "^5.0.1"
-loguru = "^0.7.2"
-uvicorn = "^0.30.0"
-asyncio = "^3.4.3"
-typing-extensions = "^4.12.0"
-prometheus-client = "^0.20.1"
-prometheus-fastapi-instrumentator = "^7.0.0"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.0",
+    "pydantic>=2.8.0",
+    "redis[asyncio]>=5.0.1",
+    "loguru>=0.7.2",
+    "uvicorn[standard]>=0.30.0",
+    "typing-extensions>=4.12.0",
+    "prometheus-client>=0.20.1",
+    "prometheus-fastapi-instrumentator>=7.0.0",
+]
 
 [project.optional-dependencies]
 dev = [
-    "pytest = ^8.3.0",
-    "pytest-asyncio = ^0.23.0",
-    "black = ^24.4.0",
-    "flake8 = ^7.0.0",
-    "locust = ^2.29.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.23.0",
+    "black>=24.4.0",
+    "flake8>=7.0.0",
+    "locust>=2.29.0",
 ]
 
 [project.scripts]

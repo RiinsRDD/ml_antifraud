@@ -21,7 +21,10 @@
       "*.pyc",
       "README.md",
       "*repomix.config.json",
-      ".gitignore"
+      ".gitignore",
+      "uv.lock",
+      "*.egg-info",
+      "*.html"
     ]
   },
   "security": {

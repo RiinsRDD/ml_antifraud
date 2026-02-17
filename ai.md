@@ -3,37 +3,39 @@
 ## Стек
 - Python 3.12+
 - FastAPI
-- Pydantic
-- Redis (кэш)
-- UoW (Unit of Work)
+- Pydantic v2
+- Redis (кэш) с async redis.asyncio
 - Repository Pattern
 - Dependency Injection
-- Loguru (/logging)
+- Loguru (логгирование)
 - Async/await
 - Docker
 - Prometheus
-- Locust (для генерации трафика)
+- aiohttp (генератор трафика)
 
 ## Архитектурный стиль
 - Service Layer Architecture
-- Dependency Injection (на уровне FastAPI)
+- Dependency Injection (на уровне FastAPI через app state)
 - Repository Pattern для работы с Redis
 - Clean Architecture с четким разделением ответственности
 - Микросервисная архитектура
 
 ## Module Map
-- `main.py` - точка входа FastAPI приложения
+- `main.py` - точка входа FastAPI приложения, DI провайдеры
 - `models/transaction.py` - Pydantic модели для транзакций
 - `models/scoring.py` - модели для результатов оценки
-- `services/transaction_service.py` - бизнес-логика обработки транзакций
-- `services/scoring_service.py` - сервис для работы с ML моделью
-- `repositories/transaction_repository.py` - репозиторий для работы с Redis
+- `services/transaction_service.py` - ABC интерфейс сервиса транзакций
+- `services/transaction_service_impl.py` - реализация сервиса транзакций
+- `services/scoring_service.py` - ABC интерфейс ML сервиса
+- `services/scoring_service_impl.py` - реализация ML сервиса
+- `repositories/transaction_repository.py` - ABC интерфейс репозитория
+- `repositories/redis_transaction_repository.py` - реализация с async redis.asyncio
 - `utils/logger.py` - конфигурация логгирования
 - `config/settings.py` - настройки приложения
 - `api/routes/transaction.py` - REST API маршруты
 - `api/middleware/logging.py` - middleware для логирования
 - `exceptions/` - пользовательские исключения
-- `load_generator/traffic_generator.py` - генератор трафика
+- `load_generator/traffic_generator.py` - генератор трафика (aiohttp)
 - `monitoring/metrics.py` - модуль настройки метрик мониторинга
 - `tests/` - тесты проекта
 - `Dockerfile` - конфигурация Docker образа
@@ -78,55 +80,54 @@ class ScoringResult(BaseModel):
 
 ### Repositories
 ```python
-# repositories/transaction_repository.py
+# repositories/transaction_repository.py (ABC)
 from abc import ABC, abstractmethod
 from typing import List
 from models.transaction import Transaction
 
 class TransactionRepository(ABC):
     @abstractmethod
-    async def add_transaction(self, transaction: Transaction) -> None:
-        ...
-
+    async def add_transaction(self, transaction: Transaction) -> None: ...
     @abstractmethod
-    async def get_transactions_by_customer(self, customer_id: str) -> List[Transaction]:
-        ...
-
+    async def get_transactions_by_customer(self, customer_id: str) -> List[Transaction]: ...
     @abstractmethod
-    async def get_statistics_by_customer(self, customer_id: str) -> dict:
-        ...
-
+    async def get_statistics_by_customer(self, customer_id: str) -> dict: ...
     @abstractmethod
-    async def update_statistics(self, customer_id: str, stats: dict) -> None:
-        ...
-
+    async def update_statistics(self, customer_id: str, stats: dict) -> None: ...
     @abstractmethod
-    async def get_cached_transaction(self, customer_id: str) -> Transaction:
-        ...
-
+    async def get_cached_transaction(self, customer_id: str) -> Transaction: ...
     @abstractmethod
-    async def delete_expired_transactions(self) -> None:
-        ...
+    async def delete_expired_transactions(self) -> None: ...
+
+# repositories/redis_transaction_repository.py (Реализация)
+from redis.asyncio import ConnectionPool
+import redis.asyncio as redis
+
+class RedisTransactionRepository(TransactionRepository):
+    def __init__(self, host, port, db, password=None):
+        self._pool = ConnectionPool(
+            host=host, port=port, db=db,
+            max_connections=50, decode_responses=True
+        )
+        self._client = redis.Redis(connection_pool=self._pool)
 ```
 
 ### Services
 ```python
-# services/transaction_service.py
-from models.transaction import Transaction
-from models.scoring import ScoringResult
-from repositories.transaction_repository import TransactionRepository
-
-class TransactionService:
-    async def process_transaction(self, transaction: Transaction) -> ScoringResult:
-        ...
-
-# services/scoring_service.py
+# services/transaction_service.py (ABC)
+from abc import ABC, abstractmethod
 from models.transaction import Transaction
 from models.scoring import ScoringResult
 
-class ScoringService:
-    async def score_transaction(self, transaction: Transaction) -> ScoringResult:
-        ...
+class TransactionService(ABC):
+    @abstractmethod
+    async def process_transaction(self, transaction: Transaction) -> ScoringResult: ...
+
+# services/transaction_service_impl.py (Реализация)
+class TransactionServiceImpl(TransactionService):
+    def __init__(self, repository, scoring_service):
+        self._repository = repository
+        self._scoring_service = scoring_service
 ```
 
 ### API Routes
@@ -136,11 +137,13 @@ from fastapi import APIRouter
 from models.transaction import Transaction
 from models.scoring import ScoringResult
 
-router = APIRouter()
+router = APIRouter(prefix="/transactions")
 
-@router.post("/transactions", response_model=ScoringResult)
+@router.post("/", response_model=ScoringResult)
 async def process_transaction(transaction: Transaction):
-    ...
+    from main import get_transaction_service
+    service = get_transaction_service()
+    return await service.process_transaction(transaction)
 ```
 
 ## Пример pyproject.toml
@@ -159,21 +162,20 @@ readme = "README.md"
 [project.dependencies]
 fastapi = "^0.115.0"
 pydantic = "^2.8.0"
-redis = "^5.0.1"
+redis = {version = "^5.0.1", extras = ["asyncio"]}
 loguru = "^0.7.2"
-uvicorn = "^0.30.0"
-asyncio = "^3.4.3"
+uvicorn = {version = "^0.30.0", extras = ["standard"]}
 typing-extensions = "^4.12.0"
 prometheus-client = "^0.20.1"
 prometheus-fastapi-instrumentator = "^7.0.0"
 
 [project.optional-dependencies]
 dev = [
-    "pytest = ^8.3.0",
-    "pytest-asyncio = ^0.23.0",
-    "black = ^24.4.0",
-    "flake8 = ^7.0.0",
-    "locust = ^2.29.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.23.0",
+    "black>=24.4.0",
+    "flake8>=7.0.0",
+    "locust>=2.29.0",
 ]
 
 [project.scripts]

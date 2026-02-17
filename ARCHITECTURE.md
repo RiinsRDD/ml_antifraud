@@ -19,21 +19,22 @@
 - **Выходные данные**: JSON с результатом оценки
 
 ### 2. Service Layer (Бизнес логика)
-- **Файлы**: `services/transaction_service.py`, `services/scoring_service.py`
+- **Файлы**: `services/transaction_service.py`, `services/scoring_service.py`, `services/transaction_service_impl.py`, `services/scoring_service_impl.py`
 - **Ответственность**:
   - Обработка логики транзакции
   - Вызов ML модели для оценки
   - Расчет статистики по клиенту
   - Обработка ошибок и таймаутов
 - **Связи**: Зависит от Repository для работы с данными
+- **Реализации**: `TransactionServiceImpl`, `ScoringServiceImpl` с async/await
 
 ### 3. Repository Layer (Доступ к данным)
-- **Файлы**: `repositories/transaction_repository.py`
+- **Файлы**: `repositories/transaction_repository.py`, `repositories/redis_transaction_repository.py`
 - **Ответственность**:
   - Интерфейс для работы с Redis кэшем
   - Добавление/извлечение транзакций
   - Расчет статистики
-- **Реализация**: Конкретная реализация будет в `repositories/redis_transaction_repository.py`
+- **Реализация**: `RedisTransactionRepository` с async redis.asyncio и connection pooling
 
 ### 4. Model Layer (Модели данных)
 - **Файлы**: `models/transaction.py`, `models/scoring.py`
@@ -47,6 +48,15 @@
 - **Ответственность**:
   - Логгирование запросов
   - Middleware для обработки запросов
+
+### 6. Main Application Layer
+- **Файл**: `main.py`
+- **Ответственность**:
+  - Точка входа FastAPI приложения
+  - Настройка мониторинга (Prometheus)
+  - Регистрация маршрутов
+  - Dependency Injection провайдеры
+  - Singleton сервисов через app state
 
 ### 6. Monitoring Layer (Мониторинг)
 - **Файлы**: `monitoring/metrics.py`
