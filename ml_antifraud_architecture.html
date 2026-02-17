@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Anti-Fraud System Architecture</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #059669;
+            --accent-color: #dc2626;
+            --warning-color: #d97706;
+            --info-color: #0ea5e9;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --border-color: #cbd5e1;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #334155;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .architecture-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .component {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .component-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .component-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .component-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .component-content {
+            padding-left: 55px;
+        }
+
+        .component-description {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tech-tag {
+            background-color: #e0f2fe;
+            color: var(--info-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .data-flow {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .data-flow-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            font-size: 1.8rem;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex-grow: 1;
+            padding: 15px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .monitoring-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .monitoring-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--info-color);
+        }
+
+        .monitoring-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--info-color);
+        }
+
+        .monitoring-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Color coding for components */
+        .ingestion .component-icon { background-color: var(--primary-color); }
+        .feature .component-icon { background-color: var(--secondary-color); }
+        .training .component-icon { background-color: var(--accent-color); }
+        .inference .component-icon { background-color: var(--warning-color); }
+        .monitoring .component-icon { background-color: var(--info-color); }
+        .alerting .component-icon { background-color: var(--dark-color); }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .architecture-diagram {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .component-content {
+                padding-left: 0;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ML Anti-Fraud System Architecture</h1>
+            <p class="subtitle">Real-time Financial Transaction Scoring Microservice</p>
+        </header>
+
+        <section class="architecture-diagram">
+            <div class="component ingestion">
+                <div class="component-header">
+                    <div class="component-icon">1</div>
+                    <h2 class="component-title">Data Ingestion Pipeline</h2>
+                </div>
+                <div class="component-content">
+                    <p class="component-description">Handles incoming transaction requests through REST API endpoints with validation and preprocessing.</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">FastAPI</span>
+                        <span class="tech-tag">Pydantic</span>
+                        <span class="tech-tag">REST API</span>
+                        <span class="tech-tag">JSON</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component feature">
+                <div class="component-header">
+                    <div class="component-icon">2</div>
+                    <h2 class="component-title">Feature Engineering</h2>
+                </div>
+                <div class="component-content">
+                    <p class="component-description">Processes transaction data and calculates customer statistics from historical data in Redis cache.</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Redis</span>
+                        <span class="tech-tag">Statistics</span>
+                        <span class="tech-tag">Caching</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component training">
+                <div class="component-header">
+                    <div class="component-icon">3</div>
+                    <h2 class="component-title">ML Model Training</h2>
+                </div>
+                <div class="component-content">
+                    <p class="component-description">Offline training of machine learning models using historical transaction data and fraud labels.</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Scikit-learn</span>
+                        <span class="tech-tag">XGBoost</span>
+                        <span class="tech-tag">TensorFlow</span>
+                        <span class="tech-tag">PyTorch</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component inference">
+                <div class="component-header">
+                    <div class="component-icon">4</div>
+                    <h2 class="component-title">Model Inference</h2>
+                </div>
+                <div class="component-content">
+                    <p class="component-description">Real-time scoring of transactions using the trained ML model with built-in timeout handling.</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Model Serving</span>
+                        <span class="tech-tag">Scoring</span>
+                        <span class="tech-tag">Timeouts</span>
+                        <span class="tech-tag">Fallback</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component monitoring">
+                <div class="component-header">
+                    <div class="component-icon">5</div>
+                    <h2 class="component-title">Monitoring & Metrics</h2>
+                </div>
+                <div class="component-content">
+                    <p class="component-description">Collects and exposes system metrics for performance tracking and observability.</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Prometheus</span>
+                        <span class="tech-tag">Grafana</span>
+                        <span class="tech-tag">Metrics</span>
+                        <span class="tech-tag">Logging</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="component alerting">
+                <div class="component-header">
+                    <div class="component-icon">6</div>
+                    <h2 class="component-title">Alerting System</h2>
+                </div>
+                <div class="component-content">
+                    <p class="component-description">Generates alerts based on system performance, fraud patterns, and anomaly detection.</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Alerting</span>
+                        <span class="tech-tag">Anomaly Detection</span>
+                        <span class="tech-tag">Notifications</span>
+                        <span class="tech-tag">SLA Monitoring</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="data-flow">
+            <h2 class="data-flow-title">Transaction Processing Flow</h2>
+            <div class="flow-container">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Transaction Ingestion</h3>
+                        <p>Client sends transaction data via POST request to /api/v1/transactions endpoint. FastAPI validates data using Pydantic models.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Data Processing</h3>
+                        <p>TransactionService processes the request, calculates customer statistics from Redis cache, and prepares features for scoring.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>ML Model Scoring</h3>
+                        <p>ScoringService calls the ML model to evaluate fraud risk. Implements timeout handling with fallback scoring mechanism.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Result Storage</h3>
+                        <p>Transaction data and scoring results are stored in Redis cache for future reference and statistics calculation.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Response Generation</h3>
+                        <p>System returns scoring result with fraud probability, processing time, and customer statistics to the client.</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Monitoring & Metrics</h3>
+                        <p>Prometheus metrics are updated with request count, latency, and system performance data for dashboard visualization.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="monitoring-section">
+            <div class="monitoring-card">
+                <div class="monitoring-icon">📊</div>
+                <h3 class="monitoring-title">Performance Metrics</h3>
+                <p>Request latency, throughput, error rates</p>
+            </div>
+
+            <div class="monitoring-card">
+                <div class="monitoring-icon">🛡️</div>
+                <h3 class="monitoring-title">Fraud Detection</h3>
+                <p>Fraud rate, precision, recall, F1-score</p>
+            </div>
+
+            <div class="monitoring-card">
+                <div class="monitoring-icon">💾</div>
+                <h3 class="monitoring-title">System Health</h3>
+                <p>Redis cache performance, memory usage</p>
+            </div>
+
+            <div class="monitoring-card">
+                <div class="monitoring-icon">🔔</div>
+                <h3 class="monitoring-title">Alerting</h3>
+                <p>Anomaly detection, SLA violations, system errors</p>
+            </div>
+        </section>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--primary-color);"></div>
+                <span>Data Ingestion</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--secondary-color);"></div>
+                <span>Feature Engineering</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--accent-color);"></div>
+                <span>Model Training</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--warning-color);"></div>
+                <span>Model Inference</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--info-color);"></div>
+                <span>Monitoring</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--dark-color);"></div>
+                <span>Alerting</span>
+            </div>
+        </div>
+
+        <footer>
+            <p>ML Anti-Fraud System Architecture Diagram | Designed for High-Performance Fraud Detection</p>
+            <p>System Requirements: &lt;200ms response time, &lt;100ms ML model timeout, automatic fallback scoring</p>
+        </footer>
+    </div>
+</body>
+</html>

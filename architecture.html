@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архитектура микросервиса оценки финансовых транзакций</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+    <style>
+        .mermaid svg {
+            width: 100% !important;
+            height: auto !important;
+        }
+        .component-box {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .component-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .component-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .layer-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .layer-1 { background-color: #3b82f6; }  /* Blue */
+        .layer-2 { background-color: #10b981; }  /* Green */
+        .layer-3 { background-color: #f59e0b; }  /* Amber */
+        .layer-4 { background-color: #8b5cf6; }  /* Violet */
+        .layer-5 { background-color: #ef4444; }  /* Red */
+        .layer-6 { background-color: #ec4899; }  /* Pink */
+        .layer-7 { background-color: #06b6d4; }  /* Cyan */
+        .connection-line {
+            stroke: #94a3b8;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4">
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-12 py-8">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white">Архитектура микросервиса оценки финансовых транзакций</h1>
+            <p class="text-gray-300 max-w-3xl mx-auto">
+                Микросервис построен по принципам Service Layer Architecture и Clean Architecture
+                с четким разделением ответственности между слоями
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="bg-gray-800 p-6 rounded-xl">
+                <h2 class="text-xl font-bold mb-4 text-blue-400">Компоненты системы</h2>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>API Layer:</strong> Обработка HTTP запросов и маршрутизация</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Service Layer:</strong> Бизнес-логика обработки транзакций и взаимодействия с ML моделью</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-amber-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Repository Layer:</strong> Работа с Redis кэшем</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-violet-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Model Layer:</strong> Модели данных с валидацией</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-red-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Monitoring Layer:</strong> Система мониторинга и метрик</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-pink-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Load Generation:</strong> Генератор трафика для тестирования</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl">
+                <h2 class="text-xl font-bold mb-4 text-cyan-400">Основные технологии</h2>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-cyan-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Python 3.12+:</strong> Основной язык программирования</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>FastAPI:</strong> Асинхронный фреймворк для API</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Pydantic:</strong> Валидация данных</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-amber-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Redis:</strong> Кэш для хранения транзакций</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-red-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Prometheus & Grafana:</strong> Мониторинг и визуализация</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="w-3 h-3 bg-pink-500 rounded-full mt-1.5 mr-3"></div>
+                        <span><strong>Locust:</strong> Генератор трафика</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-xl mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-center text-white">Архитектурная схема (взаимодействие компонентов)</h2>
+
+            <div class="mermaid">
+graph TD
+    %% Слои
+    subgraph "API Layer"
+        A[API Router<br/>/api/v1/transactions]
+    end
+
+    subgraph "Service Layer"
+        B[Transaction<br/>Service]
+        C[Scoring<br/>Service]
+    end
+
+    subgraph "Repository Layer"
+        D[Transaction<br/>Repository]
+        E[Redis<br/>Cache]
+    end
+
+    subgraph "Model Layer"
+        F[Transaction<br/>Model]
+        G[Scoring<br/>Model]
+    end
+
+    subgraph "Monitoring Layer"
+        H[Prometheus<br/>Metrics]
+    end
+
+    subgraph "Load Generation Layer"
+        I[Load<br/>Generator]
+    end
+
+    %% Взаимодействия
+    A -->|1. Обработка<br/>транзакции| B
+    B -->|2. Валидация<br/>данных| F
+    B -->|3. Запись<br/>в кэш| D
+    B -->|4. Расчет<br/>статистики| D
+    B -->|5. Вызов<br/>ML модели| C
+    D -->|6. Получение<br/>истории| E
+    D -->|7. Обновление<br/>статистики| E
+    C -->|8. Оценка<br/>транзакции| G
+    C -->|9. Обработка<br/>ошибок| H
+    G -->|10. Ответ<br/>клиенту| A
+    F -->|11. Валидация<br/>входных данных| A
+    H -->|12. Экспорт<br/>метрик| H
+    I -->|13. Генерация<br/>нагрузки| A
+
+    %% Стилизация компонентов
+    class A,B,C,D,F,G,H,I component-box;
+
+    class A,B,C,D,F,G,H,I fill-opacity:0.8;
+</div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-xl mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-center text-white">Структура слоев</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="layer-1 p-4 rounded-lg">
+                    <h3 class="layer-title">API Layer</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li> Обработка HTTP запросов </li>
+                        <li> Валидация входных данных </li>
+                        <li> Маршрутизация </li>
+                        <li> Middleware логирования </li>
+                    </ul>
+                </div>
+
+                <div class="layer-2 p-4 rounded-lg">
+                    <h3 class="layer-title">Service Layer</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li> Бизнес-логика </li>
+                        <li> Обработка транзакций </li>
+                        <li> Взаимодействие с ML моделью </li>
+                        <li> Расчет клиентской статистики </li>
+                    </ul>
+                </div>
+
+                <div class="layer-3 p-4 rounded-lg">
+                    <h3 class="layer-title">Repository Layer</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li> Интерфейс работы с Redis </li>
+                        <li> Добавление/извлечение транзакций </li>
+                        <li> Расчет статистики </li>
+                        <li> Управление TTL данных </li>
+                    </ul>
+                </div>
+
+                <div class="layer-4 p-4 rounded-lg">
+                    <h3 class="layer-title">Model Layer</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li> Определение структуры данных </li>
+                        <li> Валидация входных и выходных данных </li>
+                        <li> JSON схемы для API </li>
+                        <li> Типизация данных </li>
+                    </ul>
+                </div>
+
+                <div class="layer-5 p-4 rounded-lg">
+                    <h3 class="layer-title">Monitoring Layer</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li> Метрики Prometheus </li>
+                        <li> Логгирование </li>
+                        <li> Кастомные метрики </li>
+                        <li> Интеграция с Grafana </li>
+                    </ul>
+                </div>
+
+                <div class="layer-6 p-4 rounded-lg">
+                    <h3 class="layer-title">Load Generation Layer</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li> Генерация нагрузки </li>
+                        <li> Тестирование под нагрузкой </li>
+                        <li> Симуляция транзакций </li>
+                        <li> Статистика обработки </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-xl">
+            <h2 class="text-2xl font-bold mb-4 text-center text-white">Требования к производительности</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-400">200мс</div>
+                    <div class="text-sm">Максимальное время обработки</div>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-400">100мс</div>
+                    <div class="text-sm">Максимальное время ML модели</div>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-amber-400">24ч</div>
+                    <div class="text-sm">Время жизни кэша</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
